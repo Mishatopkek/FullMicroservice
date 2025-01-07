@@ -10,7 +10,25 @@ public record UpdateProductCommand(
 
 public record UpdateProductResult(bool IsSuccess);
 
-public class UpdateProductCommandHandler(IDocumentSession session, ILogger<UpdateProductCommandHandler> logger) : ICommandHandler<UpdateProductCommand, UpdateProductResult>
+public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+{
+    public UpdateProductCommandValidator()
+    {
+        RuleFor(command => command.Id).NotEmpty().WithMessage("Product ID is required");
+        RuleFor(command => command.Name)
+            .NotEmpty().WithMessage("Product Name is required")
+            .Length(2, 150).WithMessage("Name must be between 2 and 150 characters");
+        RuleFor(command => command.Category)
+            .NotEmpty().WithMessage("Category is required")
+            .Must(categories => categories.All(category => !string.IsNullOrEmpty(category)))
+            .WithMessage("Each category must be non-empty");
+        RuleFor(command => command.Description)
+            .NotEmpty().WithMessage("Description is required");
+    }
+}
+
+public class UpdateProductCommandHandler(IDocumentSession session, ILogger<UpdateProductCommandHandler> logger)
+    : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
     public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
@@ -20,7 +38,7 @@ public class UpdateProductCommandHandler(IDocumentSession session, ILogger<Updat
 
         if (product is null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(command.Id);
         }
 
         product.Name = command.Name;
@@ -28,10 +46,10 @@ public class UpdateProductCommandHandler(IDocumentSession session, ILogger<Updat
         product.Description = command.Description;
         product.ImageFile = command.ImageFile;
         product.Price = command.Price;
-        
+
         session.Update(product);
         await session.SaveChangesAsync(cancellationToken);
-        
+
         return new UpdateProductResult(true);
     }
 }
