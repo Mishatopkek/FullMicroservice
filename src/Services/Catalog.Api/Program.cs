@@ -22,31 +22,10 @@ builder.Services.AddMarten(option =>
                       throw new InvalidOperationException("There's no connection string"));
 }).UseLightweightSessions();
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 var app = builder.Build();
 
 app.MapCarter();
-
-app.UseExceptionHandler(exceptionHandlerApp =>
-{
-    exceptionHandlerApp.Run(async context =>
-    {
-        Exception? exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-        if (exception == null) return;
-
-        ProblemDetails problemDetails = new()
-        {
-            Status = StatusCodes.Status500InternalServerError,
-            Title = exception.Message,
-            Detail = exception.StackTrace
-        };
-
-        ILogger<Program> logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(exception, exception.Message);
-
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/problem+json";
-        await context.Response.WriteAsJsonAsync(problemDetails);
-    });
-});
 
 await app.RunAsync();
