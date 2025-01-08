@@ -1,13 +1,11 @@
-﻿using Catalog.Api.Exceptions;
-using Catalog.Api.Models;
-
-namespace Catalog.Api.Products.GetProductById;
+﻿namespace Catalog.Api.Products.GetProductById;
 
 public record GetProductByIdQuery(Guid Id) : IQuery<GetProductByIdResult>;
 
 public record GetProductByIdResult(Product Product);
 
-public class GetProductByQueryHandler(IDocumentSession session, ILogger<GetProductByQueryHandler> logger) : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
+public class GetProductByQueryHandler(IDocumentSession session, ILogger<GetProductByQueryHandler> logger)
+    : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
 {
     public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
     {
@@ -17,7 +15,7 @@ public class GetProductByQueryHandler(IDocumentSession session, ILogger<GetProdu
 
         if (product is null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(query.Id);
         }
 
         return new GetProductByIdResult(product);
