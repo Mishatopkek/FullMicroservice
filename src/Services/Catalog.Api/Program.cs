@@ -1,9 +1,6 @@
 using System.Reflection;
-using BuildingBlocks.Behaviours;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
-Assembly? catalogApiAssembly = typeof(Program).Assembly;
+Assembly catalogApiAssembly = typeof(Program).Assembly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +9,7 @@ builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(catalogApiAssembly);
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+    config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
 builder.Services.AddValidatorsFromAssembly(catalogApiAssembly);
