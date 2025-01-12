@@ -9,13 +9,13 @@ public class GetBasketEndpoints : ICarterModule
         app.MapGet("/basket/{userName}", async (string userName, ISender sender) =>
             {
                 GetBasketResult result = await sender.Send(new GetBasketQuery(userName));
-                GetBasketResponse response = result.Adapt<GetBasketResponse>();
+                GetBasketResponse? response = result.Adapt<GetBasketResponse>();
 
 
                 return Results.Ok(response);
             })
             .WithName("GetBasketByName")
-            .Produces<GetBasketResponse>()
+            .Produces<GetBasketResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .WithSummary("Get Basket by name")
             .WithDescription("Get basket by name");

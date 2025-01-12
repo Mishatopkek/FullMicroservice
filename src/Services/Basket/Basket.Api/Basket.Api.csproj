@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>0a836904-a540-4107-9d75-856048677b02</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +16,7 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.2"/>
+        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.1"/>
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0"/>
         <PackageReference Include="Carter" Version="8.2.1"/>
         <PackageReference Include="Marten" Version="7.34.1"/>

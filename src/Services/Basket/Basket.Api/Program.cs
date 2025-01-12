@@ -1,5 +1,6 @@
 using System.Reflection;
-using Microsoft.Extensions.Caching.Distributed;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,19 +22,26 @@ builder.Services.AddMarten(config =>
 }).UseLightweightSessions();
 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 
-builder.Services.AddScoped<IBasketRepository>(provider =>
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    BasketRepository basketRepository = provider.GetRequiredService<BasketRepository>();
-    return new CachedBasketRepository(basketRepository, provider.GetRequiredService<IDistributedCache>());
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
-builder.Services.AddScoped<IBasketRepository, CachedBasketRepository>();
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Database"))
+    .AddRedis(builder.Configuration.GetConnectionString("Redis"));
 
 WebApplication app = builder.Build();
 
 app.MapCarter();
-app.UseExceptionHandler();
+app.UseExceptionHandler(options => { });
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 await app.RunAsync();
