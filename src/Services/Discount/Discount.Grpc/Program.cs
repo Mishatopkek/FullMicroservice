@@ -15,6 +15,8 @@ builder.Services.AddDbContext<DiscountContext>(options =>
 
 WebApplication? app = builder.Build();
 
+await app.UseMigrationAsync();
+
 if (app.Environment.IsDevelopment())
     app.MapGrpcReflectionService();
 
