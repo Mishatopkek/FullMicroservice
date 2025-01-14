@@ -4,6 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>118790c5-9de1-447b-92e2-c878d3c20f1d</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,6 +22,12 @@
     <ItemGroup>
         <None Remove="Protos\discount.proto"/>
         <Protobuf Include="Protos\discount.proto" GrpcServices="Server"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\..\..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
 </Project>
