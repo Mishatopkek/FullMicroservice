@@ -24,6 +24,12 @@
       context: .
       dockerfile: src/Services/Discount/Discount.Grpc/Dockerfile
 
+  basket.api-1:
+    image: basket.api-1
+    build:
+      context: .
+      dockerfile: src/Services/Basket/Basket.Api/Dockerfile
+
 volumes:
   postgres_catalog:
   postgres_basket:
