@@ -1,6 +1,13 @@
+using Ordering.Api;
+using Ordering.Application;
+using Ordering.Infrastructure;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddApi();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
+
 WebApplication app = builder.Build();
 
 await app.RunAsync();
